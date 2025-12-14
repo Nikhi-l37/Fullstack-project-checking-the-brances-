@@ -1,0 +1,154 @@
+/* style.css */
+
+/* Global Reset & Body Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Main Card Container */
+.container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+h2:first-of-type {
+    margin-top: 0;
+}
+
+/* Forms */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+/* Inputs */
+input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Buttons */
+button {
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Specific styling for Logout (make it red/danger) */
+#logoutBtn {
+    background-color: #dc3545;
+    margin-top: 10px;
+    width: 100%;
+}
+
+#logoutBtn:hover {
+    background-color: #a71d2a;
+}
+
+/* Secondary Button (Load Users) */
+#loadUsersBtn {
+    background-color: #28a745;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#loadUsersBtn:hover {
+    background-color: #1e7e34;
+}
+
+/* User List Styling */
+#userList {
+    list-style: none;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#userList li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+#userList li:last-child {
+    border-bottom: none;
+}
+
+#userList li:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Message & Utility */
+#authMessage {
+    text-align: center;
+    color: #d63031;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin: 20px 0;
+}
