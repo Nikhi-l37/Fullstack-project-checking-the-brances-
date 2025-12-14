@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Frontend + Backend (Auth)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    form {
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 8px;
+      margin-right: 6px;
+    }
+
+    button {
+      padding: 8px 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Task Manager — Demo (Auth)</h1>
+
+    <div id="authArea">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input id="regName" placeholder="Name" />
+        <input id="regEmail" type="email" placeholder="Email" required />
+        <input id="regPassword" type="password" placeholder="Password" required />
+        <button type="submit">Register</button>
+      </form>
+
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input id="loginEmail" type="email" placeholder="Email" required />
+        <input id="loginPassword" type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p id="authMessage"></p>
+    </div>
+
+    <div id="appArea" class="hidden">
+      <p>Logged in as: <span id="userEmail"></span></p>
+      <button id="logoutBtn">Logout</button>
+
+      <hr />
+
+      <h2>All Users (protected)</h2>
+      <button id="loadUsersBtn">Load Users</button>
+      <ul id="userList"></ul>
+    </div>
+  </div>
+
+  <script>
+    
+    const apiBase = 'http://localhost:5001'; // same origin if you're serving index from backend. Or 'http://localhost:5001' if frontend served separately
+
+    // Helpers
+    function setToken(token) {
+      localStorage.setItem('token', token);
+    }
+    function getToken() {
+      return localStorage.getItem('token');
+    }
+    function clearToken() {
+      localStorage.removeItem('token');
+    }
+    function authHeader() {
+      const t = getToken();
+      return t ? { 'Authorization': 'Bearer ' + t } : {};
+    }
+
+    // Register
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      try {
+        const res = await fetch(apiBase + '/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          document.getElementById('authMessage').innerText = data.message || 'Register failed';
+          return;
+        }
+        setToken(data.token);
+        showAppArea(data.user);
+      } catch (err) {
+        document.getElementById('authMessage').innerText = 'Error: ' + err.message;
+      }
+    });
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      try {
+        const res = await fetch(apiBase + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          document.getElementById('authMessage').innerText = data.message || 'Login failed';
+          return;
+        }
+        setToken(data.token);
+        showAppArea(data.user);
+      } catch (err) {
+        document.getElementById('authMessage').innerText = 'Error: ' + err.message;
+      }
+    });
+
+    function showAppArea(user) {
+      document.getElementById('authArea').classList.add('hidden');
+      document.getElementById('appArea').classList.remove('hidden');
+      document.getElementById('userEmail').innerText = user.email || '';
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearToken();
+      document.getElementById('authArea').classList.remove('hidden');
+      document.getElementById('appArea').classList.add('hidden');
+    });
+
+    // Load Users (protected)
+    document.getElementById('loadUsersBtn').addEventListener('click', getUsers);
+    async function getUsers() {
+      const headers = { 'Content-Type': 'application/json', ...authHeader() };
+      try {
+        const res = await fetch(apiBase + '/api/users', { headers });
+        if (res.status === 401 || res.status === 401) {
+          alert('Unauthorized. Please login again.');
+          clearToken();
+          return;
+        }
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.message || 'Error loading users');
+          return;
+        }
+        const list = document.getElementById('userList');
+        list.innerHTML = '';
+        data.forEach(u => {
+          const li = document.createElement('li');
+          li.innerText = `${u.name || '—'} (${u.email})`;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // If token exists on page load, try to get a minimal user profile (or just show app area)
+    window.addEventListener('load', () => {
+      const token = getToken();
+      if (token) {
+        // Not decoding token here; simply show UI and let user load protected data
+        document.getElementById('authArea').classList.add('hidden');
+        document.getElementById('appArea').classList.remove('hidden');
+        document.getElementById('userEmail').innerText = 'Logged in (token present)';
+      }
+    });
+  </script>
+</body>
+
+</html>
