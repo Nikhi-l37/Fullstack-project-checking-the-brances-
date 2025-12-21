@@ -1,4 +1,3 @@
-// backend/server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -19,7 +18,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Connect to MongoDB
 const uri = process.env.MONGO_URI;
 const connectDB = async () => {
   try {
@@ -32,13 +30,10 @@ const connectDB = async () => {
 };
 connectDB();
 
-// Routes
 app.use('/api/auth', authRoutes);
 
-// Protect this route — only logged in users can get the list
 app.get('/api/users', authMiddleware, async (req, res) => {
   try {
-    // Optional: exclude password field
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
@@ -46,9 +41,8 @@ app.get('/api/users', authMiddleware, async (req, res) => {
   }
 });
 
-// (Optional) allow creating user via admin endpoint if you still want
 app.post('/api/users', async (req, res) => {
-  // For demonstration: create user with password (not protected)
+  
   try {
     const { name, email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
@@ -65,7 +59,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// serve static index if you placed index.html in backend/public
+``
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
