@@ -18,7 +18,4 @@ module.exports = function (req, res, next) {
     return res.status(401).json({ message: 'Token invalid or expired' });
   }
 };
- // testing the auth middleware  and server.js file integration
-
-// To test the auth middleware, you can create a simple route in your server.js file
-// that uses this middleware and returns a protected resource.
+ 
